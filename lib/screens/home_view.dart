@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:judah/screens/searchbar_view.dart';
 // Make sure these imports match your project structure
 // import 'package:judah/screens/home_controller.dart'; // <-- REMOVED
 import 'package:judah/screens/widgets/app_theme.dart';
@@ -188,10 +189,20 @@ class _HomeViewState extends State<HomeView> {
   }
 
   // --- 2. SEARCH BAR ---
+  // --- THIS METHOD IS UPDATED ---
   Widget _buildSearchBar() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
       child: TextField(
+        // --- CHANGES HERE ---
+        readOnly: true,
+        onTap: () {
+          // Navigate to the new search screen
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const SearchView()),
+          );
+        },
+        // --- END CHANGES ---
         decoration: InputDecoration(
           hintText: "What are you craving?",
           prefixIcon: const Icon(Icons.search, color: AppColors.textFaded),
@@ -662,4 +673,3 @@ class _StickyCategoryHeaderDelegate extends SliverPersistentHeaderDelegate {
     return child != oldDelegate.child || height != oldDelegate.height;
   }
 }
-
