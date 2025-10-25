@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-
+// Make sure these imports match your project structure
+import 'package:judah/screens/setup_profile_view.dart';
 import 'package:judah/screens/widgets/app_theme.dart';
 import 'package:judah/screens/widgets/buttons_theme.dart';
 import 'package:pinput/pinput.dart';
@@ -19,7 +20,7 @@ class _OtpViewState extends State<OtpView> {
 
   @override
   Widget build(BuildContext context) {
-    // Pinput theme
+    // Pinput theme (keep all your existing theme code)
     final defaultPinTheme = PinTheme(
       width: 60,
       height: 60,
@@ -76,6 +77,7 @@ class _OtpViewState extends State<OtpView> {
               showCursor: true,
               onCompleted: (pin) {
                 // TODO: Verify PIN
+                print("Completed: $pin");
               },
             ),
             const SizedBox(height: 40),
@@ -98,16 +100,20 @@ class _OtpViewState extends State<OtpView> {
             ),
             const Spacer(),
 
-            // Verify Button
+            // --- UPDATED BUTTON ---
             PrimaryButton(
               text: "Verify",
               onPressed: () {
                 // TODO: Add verification logic
-                // For now, just pop back
-                Navigator.of(context).pop();
-                Navigator.of(context).pop(); // Pop twice to go back to auth gate
+                // On success, navigate to Profile Setup
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const SetupProfileView(),
+                  ),
+                );
               },
             ),
+            // ---------------------
             const SizedBox(height: 20),
           ],
         ),
@@ -115,3 +121,4 @@ class _OtpViewState extends State<OtpView> {
     );
   }
 }
+

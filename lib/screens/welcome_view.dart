@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-
+// Note: Make sure your import paths match your project name
 import 'package:judah/screens/splash_view.dart';
 import 'package:judah/screens/widgets/app_theme.dart';
 
@@ -19,8 +19,6 @@ class _WelcomeViewState extends State<WelcomeView> {
     // Navigate to onboarding/splash screen after a delay
     Timer(const Duration(seconds: 3), () {
       if (mounted) {
-        // Here, you would check if the user is new.
-        // For this UI-only build, we'll always go to the SplashView.
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const SplashView()),
         );
@@ -34,24 +32,25 @@ class _WelcomeViewState extends State<WelcomeView> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // 1. Background Image (Placeholder)
+          // --- UPDATED WIDGET ---
+          // 1. Background Image
+          // I'm assuming your bg image is in 'assets/images/'
           Container(
-            color: Colors.grey[800],
-            child: const Center(
-              child: Icon(
-                Icons.image,
-                color: Colors.grey,
-                size: 200,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                // Path to your background image
+                image: const AssetImage('assets/images/welcome_bg.jpg'), // Corrected path
+                fit: BoxFit.cover,
+                onError: (exception, stackTrace) {
+                  debugPrint('Image load error: $exception');
+                },
               ),
             ),
-            // You would use your pizza image here:
-            // decoration: const BoxDecoration(
-            //   image: DecorationImage(
-            //     image: AssetImage('assets/images/pizza_bg.jpg'),
-            //     fit: BoxFit.cover,
-            //   ),
-            // ),
+            // Fallback color in case image fails
+            child: Container(color: Colors.grey[800]?.withOpacity(0.5)),
           ),
+          // ------------------------
+
           // 2. Dark Overlay
           Container(
             decoration: BoxDecoration(
@@ -74,7 +73,7 @@ class _WelcomeViewState extends State<WelcomeView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Welcome to Foodu! 👋",
+                  "Welcome to Judah! 👋",
                   style: Theme.of(context)
                       .textTheme
                       .headlineMedium
