@@ -7,6 +7,8 @@ import 'package:judah/screens/widgets/app_theme.dart';
 // If you want the exact icon, you might need another package
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import 'cart_view.dart';
+
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
 
@@ -110,7 +112,7 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  // --- 1. APP BAR ---
+  // --- 1. APP BAR (UPDATED) ---
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       elevation: 0,
@@ -155,8 +157,16 @@ class _HomeViewState extends State<HomeView> {
         ],
       ),
       actions: [
-        _buildAppBarIcon(Icons.notifications_outlined, () {}),
-        _buildAppBarIcon(Icons.shopping_bag_outlined, () {}),
+        _buildAppBarIcon(Icons.notifications_outlined, () {
+          // TODO: Add notification logic
+        }),
+        // --- NAVIGATION CHANGE HERE ---
+        _buildAppBarIcon(Icons.shopping_bag_outlined, () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const CartView()),
+          );
+        }),
+        // --- END NAVIGATION CHANGE ---
         const SizedBox(width: 16),
       ],
     );
