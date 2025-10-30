@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:judah/screens/widgets/app_theme.dart';
 import 'package:judah/screens/widgets/buttons_theme.dart';
 
-
 import 'item_deatils_view.dart';
 import 'order_state_view.dart';
-import 'orders_placedview.dart';
+import 'orders_placedview.dart'; // Note: Assuming this is the OrderPlacedView file
+
+// NEW IMPORT for the Tracking Screen
+import 'track_orders_view.dart';
 
 
 class OrdersView extends StatefulWidget {
@@ -64,6 +66,7 @@ class _OrdersViewState extends State<OrdersView> with SingleTickerProviderStateM
       activeOrders = [OrderState.activeOrder!];
     } else {
       // Otherwise, show the default dummy list for cancelled/old orders in the Active tab.
+      // This list represents the orders that were attempted but failed/cancelled previously.
       activeOrders = [
         {"name": "Bite Me Sandwiches", "items": 3, "distance": 1.4, "price": 32.00, "status": "Cancelled", "image": "https://placehold.co/100x100/FFF8DC/000?text=Sandwich"},
         {"name": "Life of Salad", "items": 4, "distance": 2.5, "price": 24.00, "status": "Cancelled", "image": "https://placehold.co/100x100/ADFF2F/000?text=Salad"},
@@ -123,13 +126,18 @@ class _OrdersViewState extends State<OrdersView> with SingleTickerProviderStateM
 
   // Helper to build the list of orders for each tab
   Widget _buildOrderList(List<Map<String, dynamic>> orders, {required String type, bool hasActiveOrder = false}) {
-    if (orders.isEmpty && type != "active") { // Only show empty state for Completed/Cancelled
+
+    // FIX START: If it's the active tab and NO new order was placed, AND the list of dummy orders is empty, show empty state.
+    if (type == "active" && !hasActiveOrder && orders.isEmpty) {
       return _buildEmptyOrdersState(type);
     }
-    // For 'active' tab, if no specific active order, show the dummy list (which contains cancelled dummy orders)
-    if (orders.isEmpty && type == "active" && !hasActiveOrder) {
-      return _buildEmptyOrdersState(type); // Show the empty state placeholder
+
+    // Check for standard empty lists (Completed / Cancelled)
+    if (orders.isEmpty && type != "active") {
+      return _buildEmptyOrdersState(type);
     }
+
+    // FIX END
 
     return ListView.builder(
       padding: const EdgeInsets.all(24.0),
@@ -268,10 +276,10 @@ class _OrdersViewState extends State<OrdersView> with SingleTickerProviderStateM
                 Expanded(
                   child: PrimaryButton(
                     onPressed: () {
-                      // Navigate to the success screen again (as a placeholder for a real tracking map)
+                      // Navigate to the dedicated tracking screen
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                            builder: (_) => OrderPlacedView(orderTotal: order["price"] as double)
+                            builder: (_) => const TrackOrdersView() // Navigates to the map screen
                         ),
                       );
                     },
