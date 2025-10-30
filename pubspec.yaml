@@ -33,6 +33,7 @@ dependencies:
   pinput: ^4.0.0
   google_fonts: ^6.2.1
   font_awesome_flutter: ^10.7.0
+  lottie: ^3.3.2
 
 
 
@@ -66,7 +67,9 @@ flutter:
   # --- UPDATED THIS SECTION ---
   assets:
     - assets/logo/  # This includes your assets/logo/img.png
-    - assets/images/ # Make sure to add your welcome_bg.jpg in here
+    - assets/images/
+    - assets/animations/
+    # Make sure to add your welcome_bg.jpg in here
   # --------------------------
 
   # An image asset can refer to one or more resolution-specific "variants", see

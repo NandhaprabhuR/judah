@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:judah/screens/widgets/app_theme.dart';
 import 'package:judah/screens/widgets/buttons_theme.dart';
-import 'driver_heading_view.dart';
+// REMOVED IMPORT: import 'driver_heading_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import 'orders_placedview.dart';
 
 // This is Screen 47: Payment Methods
 class PaymentMethodsView extends StatefulWidget {
@@ -26,6 +28,9 @@ class _PaymentMethodsViewState extends State<PaymentMethodsView> {
 
   @override
   Widget build(BuildContext context) {
+    // NOTE: Using a dummy total (104.00) as the real total is not passed to this screen
+    const double dummyTotal = 104.00;
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -78,9 +83,9 @@ class _PaymentMethodsViewState extends State<PaymentMethodsView> {
               onPressed: _selectedMethod == null
                   ? () {} // Set to an empty function when disabled
                   : () {
-                // Navigate to the driver tracking screen after 'paying'
+                // Navigate to the Order Placed success screen after payment is selected
                 Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => const DriverHeadingView()),
+                  MaterialPageRoute(builder: (_) => const OrderPlacedView(orderTotal: dummyTotal)),
                 );
               },
             ),

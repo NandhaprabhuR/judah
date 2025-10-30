@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:judah/screens/widgets/app_theme.dart';
 import 'package:judah/screens/widgets/buttons_theme.dart';
 
-import 'package:judah/screens/driver_heading_view.dart';
+// REMOVED IMPORT: import 'package:judah/screens/driver_heading_view.dart';
 
 import 'item_deatils_view.dart';
 import 'order_state_view.dart';
+import 'orders_placedview.dart';
 
 
 class OrdersView extends StatefulWidget {
@@ -240,7 +241,7 @@ class _OrdersViewState extends State<OrdersView> with SingleTickerProviderStateM
               ],
             ),
           ],
-          // --- Action Buttons for Active Orders (New) ---
+          // --- Action Buttons for Active Orders (Modified Navigation) ---
           if (type == "active" && OrderState.activeOrder != null) ...[
             const SizedBox(height: 16),
             Row(
@@ -248,9 +249,12 @@ class _OrdersViewState extends State<OrdersView> with SingleTickerProviderStateM
                 Expanded(
                   child: PrimaryButton(
                     onPressed: () {
-                      // Simulates tracking the order (e.g., navigating to driver view)
+                      // Simulates tracking the order by navigating to the success screen
+                      // (as driver tracking screen was removed)
                       Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const DriverHeadingView()),
+                        MaterialPageRoute(
+                            builder: (_) => OrderPlacedView(orderTotal: order["price"] as double)
+                        ),
                       );
                     },
                     text: "Track Order",

@@ -3,6 +3,8 @@ import 'package:judah/screens/payment_method_view.dart';
 import 'package:judah/screens/widgets/app_theme.dart';
 import 'package:judah/screens/widgets/buttons_theme.dart';
 
+import 'orders_placedview.dart'; // NEW IMPORT for direct order flow
+
 // This is Screen 45: Checkout Orders
 class CheckoutOrdersView extends StatelessWidget {
   const CheckoutOrdersView({super.key});
@@ -56,8 +58,9 @@ class CheckoutOrdersView extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // --- 3. Payment and Discounts ---
+            // --- 3. Payment and Discounts (UNCHANGED) ---
             _buildActionRow(context, "Payment Methods", Icons.credit_card, () {
+              // Navigate to Payment Methods (UNCHANGED)
               Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PaymentMethodsView()));
             }),
             _buildActionRow(context, "Get Discounts", Icons.local_offer, () {
@@ -78,8 +81,12 @@ class CheckoutOrdersView extends StatelessWidget {
         child: PrimaryButton(
           text: "Place Order - \$${total.toStringAsFixed(2)}",
           onPressed: () {
-            // Final action button
-            Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PaymentMethodsView()));
+            // Final action button: Navigate directly to Order Placed Success screen
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                    builder: (_) => OrderPlacedView(orderTotal: total)
+                )
+            );
           },
         ),
       ),
