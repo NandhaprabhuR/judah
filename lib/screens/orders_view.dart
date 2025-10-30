@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:judah/screens/widgets/app_theme.dart';
 import 'package:judah/screens/widgets/buttons_theme.dart';
 
-// REMOVED IMPORT: import 'package:judah/screens/driver_heading_view.dart';
 
 import 'item_deatils_view.dart';
 import 'order_state_view.dart';
@@ -58,10 +57,13 @@ class _OrdersViewState extends State<OrdersView> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     // --- Dynamic Active Order List ---
     List<Map<String, dynamic>> activeOrders;
-    if (OrderState.activeOrder != null) {
+    bool hasActiveOrder = OrderState.activeOrder != null;
+
+    if (hasActiveOrder) {
+      // If a new order was placed, display only that one.
       activeOrders = [OrderState.activeOrder!];
     } else {
-      // Use the provided dummy data for the active screen when no new order is placed
+      // Otherwise, show the default dummy list for cancelled/old orders in the Active tab.
       activeOrders = [
         {"name": "Bite Me Sandwiches", "items": 3, "distance": 1.4, "price": 32.00, "status": "Cancelled", "image": "https://placehold.co/100x100/FFF8DC/000?text=Sandwich"},
         {"name": "Life of Salad", "items": 4, "distance": 2.5, "price": 24.00, "status": "Cancelled", "image": "https://placehold.co/100x100/ADFF2F/000?text=Salad"},
@@ -111,7 +113,7 @@ class _OrdersViewState extends State<OrdersView> with SingleTickerProviderStateM
       body: TabBarView(
         controller: _tabController,
         children: [
-          _buildOrderList(activeOrders, type: "active"),
+          _buildOrderList(activeOrders, type: "active", hasActiveOrder: hasActiveOrder), // Pass flag
           _buildOrderList(completedOrdersBase, type: "completed"),
           _buildOrderList(cancelledOrders, type: "cancelled"),
         ],
@@ -120,9 +122,13 @@ class _OrdersViewState extends State<OrdersView> with SingleTickerProviderStateM
   }
 
   // Helper to build the list of orders for each tab
-  Widget _buildOrderList(List<Map<String, dynamic>> orders, {required String type}) {
-    if (orders.isEmpty) {
+  Widget _buildOrderList(List<Map<String, dynamic>> orders, {required String type, bool hasActiveOrder = false}) {
+    if (orders.isEmpty && type != "active") { // Only show empty state for Completed/Cancelled
       return _buildEmptyOrdersState(type);
+    }
+    // For 'active' tab, if no specific active order, show the dummy list (which contains cancelled dummy orders)
+    if (orders.isEmpty && type == "active" && !hasActiveOrder) {
+      return _buildEmptyOrdersState(type); // Show the empty state placeholder
     }
 
     return ListView.builder(
@@ -130,17 +136,30 @@ class _OrdersViewState extends State<OrdersView> with SingleTickerProviderStateM
       itemCount: orders.length,
       itemBuilder: (context, index) {
         final order = orders[index];
-        return _buildOrderItemCard(context, order, type: type);
+        return _buildOrderItemCard(context, order, type: type, isNewlyPlaced: hasActiveOrder); // Pass flag
       },
     );
   }
 
   // Helper to build a single order item card
-  Widget _buildOrderItemCard(BuildContext context, Map<String, dynamic> order, {required String type}) {
+  Widget _buildOrderItemCard(BuildContext context, Map<String, dynamic> order, {required String type, required bool isNewlyPlaced}) {
     // Determine the status text based on active/placed status
-    String statusText = type == "active" && OrderState.activeOrder != null ? "Placed" : order["status"];
-    Color statusColor = type == "active" && OrderState.activeOrder != null ? Colors.blue.shade600 : (type == "active" ? Colors.red : AppColors.primary);
-    Color statusBgColor = type == "active" && OrderState.activeOrder != null ? Colors.blue.shade100 : (type == "active" ? Colors.red.withOpacity(0.1) : AppColors.primaryLight);
+    String statusText = isNewlyPlaced ? "Placed" : order["status"];
+    Color statusColor = isNewlyPlaced ? Colors.blue.shade600 : (type == "active" ? Colors.red : AppColors.primary);
+    Color statusBgColor = isNewlyPlaced ? Colors.blue.shade100 : (type == "active" ? Colors.red.withOpacity(0.1) : AppColors.primaryLight);
+
+    // If it is the active tab but no new order was placed, use red/cancelled styling (for the dummy data)
+    if (type == "active" && !isNewlyPlaced) {
+      statusColor = Colors.red;
+      statusBgColor = Colors.red.withOpacity(0.1);
+    }
+
+    // If it is the active tab and the order is Newly Placed, use the blue "Placed" status
+    if (isNewlyPlaced) {
+      statusColor = Colors.blue.shade600;
+      statusBgColor = Colors.blue.shade100;
+    }
+
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -241,16 +260,15 @@ class _OrdersViewState extends State<OrdersView> with SingleTickerProviderStateM
               ],
             ),
           ],
-          // --- Action Buttons for Active Orders (Modified Navigation) ---
-          if (type == "active" && OrderState.activeOrder != null) ...[
+          // --- Action Buttons for Active Orders (Track Order) ---
+          if (type == "active" && isNewlyPlaced) ...[
             const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
                   child: PrimaryButton(
                     onPressed: () {
-                      // Simulates tracking the order by navigating to the success screen
-                      // (as driver tracking screen was removed)
+                      // Navigate to the success screen again (as a placeholder for a real tracking map)
                       Navigator.of(context).push(
                         MaterialPageRoute(
                             builder: (_) => OrderPlacedView(orderTotal: order["price"] as double)

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 // Make sure these imports match your project structure
 import 'package:judah/screens/home_view.dart';
+import 'package:judah/screens/orders_view.dart'; // NEW: Ensure OrdersView is imported
 import 'package:judah/screens/widgets/app_theme.dart';
 
 class BottomNavbarView extends StatefulWidget {
@@ -14,9 +15,10 @@ class _BottomNavbarViewState extends State<BottomNavbarView> {
   int _selectedIndex = 0;
 
   // Pages for each tab
-  static final List<Widget> _widgetOptions = <Widget>[
+  // 💡 FIX: We instantiate OrdersView here to force it to rebuild when selected.
+  final List<Widget> _widgetOptions = <Widget>[
     const HomeView(), // Screen for "Home"
-    const PlaceholderScreen(title: "Orders"), // Placeholder
+    const OrdersView(), // <<< CHANGE: Use the real OrdersView for dynamic rebuilds
     const PlaceholderScreen(title: "Message"), // Placeholder
     const PlaceholderScreen(title: "E-Wallet"), // Placeholder
     const PlaceholderScreen(title: "Profile"), // Placeholder
@@ -32,6 +34,7 @@ class _BottomNavbarViewState extends State<BottomNavbarView> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
+        // Use the list we created above.
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
