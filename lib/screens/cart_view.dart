@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:judah/screens/widgets/app_theme.dart';
-import 'package:judah/screens/widgets/buttons_theme.dart'; // Needed for PrimaryButton (future use)
+import 'package:judah/screens/widgets/buttons_theme.dart';
+import 'dart:math';
+
+import 'item_deatils_view.dart';
+
 
 // This is a placeholder for the Cart view (based on the provided screenshot)
 class CartView extends StatefulWidget {
@@ -102,8 +106,21 @@ class _CartViewState extends State<CartView> {
                       _removeItem(index);
                     },
 
-                    // The actual cart item content
-                    child: _buildCartItemCard(item),
+                    // The actual cart item content (Wrapped in InkWell for navigation)
+                    child: InkWell( // <-- WRAPPER ADDED FOR NAVIGATION
+                      onTap: () {
+                        // Navigate to Item Details when card is tapped (Required for Review/Promo screen access)
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => ItemDetailsView(
+                              itemName: item["title"],
+                              itemImage: 'https://placehold.co/400x400/000/FFF?text=CartItem', // Placeholder image
+                            ),
+                          ),
+                        );
+                      },
+                      child: _buildCartItemCard(item),
+                    ),
                   ),
                 );
               },

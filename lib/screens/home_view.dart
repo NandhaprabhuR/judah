@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:judah/screens/searchbar_view.dart';
-// Make sure these imports match your project structure
-// import 'package:judah/screens/home_controller.dart'; // <-- REMOVED
 import 'package:judah/screens/widgets/app_theme.dart';
-// Using a built-in icon for the delivery bike
-// If you want the exact icon, you might need another package
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'cart_view.dart';
+import 'item_deatils_view.dart';
+import 'special_offers_view.dart';
+import 'recommendation_view.dart';
+import 'more_category_view.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -17,9 +17,15 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  // final HomeController _controller = HomeController(); // <-- REMOVED
   final String _currentAddress = "Times Square"; // Default
   String _selectedFilter = "All";
+
+  // --- Dummy state for tracking item quantities in the list ---
+  final Map<String, int> _itemQuantities = {};
+
+  // Key to manage and close the bottom sheet
+  PersistentBottomSheetController? _sheetController;
+
 
   // Dummy data for the UI
   final List<Map<String, String>> categories = [
@@ -35,84 +41,134 @@ class _HomeViewState extends State<HomeView> {
 
   final List<String> filters = ["All", "Hamburger", "Pizza", "Drink", "Meat"];
 
-  // REMOVED initState() and _fetchLocation() as they are no longer needed
-  /*
-  @override
-  void initState() {
-    super.initState();
-    _fetchLocation();
+  // --- ENHANCED: Bottom Sheet Logic ---
+  void _showCartConfirmationSheet(BuildContext context, String itemName, int quantity) {
+    // If the sheet is already open, close it first to update the content,
+    // or dismiss it if quantity is zero.
+    if (_sheetController != null) {
+      _sheetController!.close();
+      _sheetController = null;
+    }
+
+    // Only show if quantity is greater than 0
+    if (quantity > 0) {
+      _sheetController = Scaffold.of(context).showBottomSheet(
+            (context) => Container(
+          padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+          decoration: const BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
+            ),
+            boxShadow: [
+              BoxShadow(color: Colors.black12, blurRadius: 20, offset: Offset(0, -5)),
+            ],
+          ),
+          // --- FIXED OVERFLOW ISSUE WITH EXPANDED ---
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Text Column wrapped in Expanded to prevent overflow
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "$quantity x $itemName Added!",
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      "View your cart for checkout.",
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textFaded),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 16),
+              // Button
+              SizedBox(
+                width: 100,
+                child: ElevatedButton(
+                  onPressed: () {
+                    _sheetController?.close(); // Close sheet
+                    _sheetController = null;
+                    Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CartView()));
+                  },
+                  child: const Text("View Cart"),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
   }
 
-  void _fetchLocation() async {
-    // We're not using the full address, just the first part
-    String address = await _controller.getUserLocationAddress();
-    if (address.contains(",")) {
-      address = address.split(',')[0];
-    }
-    if (mounted) {
-      setState(() {
-        _currentAddress = address;
-      });
-    }
-  }
-  */
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
-      // --- REFACTORED TO CustomScrollView ---
-      body: CustomScrollView(
-        slivers: [
-          // --- 1. SEARCH BAR ---
-          SliverToBoxAdapter(child: _buildSearchBar()),
-          const SliverToBoxAdapter(child: SizedBox(height: 24)),
+      // Builder is needed for the Scaffold.of(context) required by showBottomSheet
+      body: Builder(
+        builder: (context) {
+          // Store the current context in a local variable to use it safely in callbacks
+          final localContext = context;
+          return CustomScrollView(
+            slivers: [
+              // --- 1. SEARCH BAR ---
+              SliverToBoxAdapter(child: _buildSearchBar()),
+              const SliverToBoxAdapter(child: SizedBox(height: 24)),
 
-          // --- 2. SPECIAL OFFERS ---
-          SliverToBoxAdapter(child: _buildSectionHeader("Special Offers", () {})),
-          const SliverToBoxAdapter(child: SizedBox(height: 16)),
-          SliverToBoxAdapter(child: _buildSpecialOfferBanner()),
-          const SliverToBoxAdapter(child: SizedBox(height: 24)),
+              // --- 2. SPECIAL OFFERS ---
+              SliverToBoxAdapter(child: _buildSectionHeader("Special Offers", () {})),
+              const SliverToBoxAdapter(child: SizedBox(height: 16)),
+              SliverToBoxAdapter(child: _buildSpecialOfferBanner()),
+              const SliverToBoxAdapter(child: SizedBox(height: 24)),
 
-          // --- 3. STICKY CATEGORY GRID ---
-          SliverPersistentHeader(
-            pinned: true,
-            delegate: _StickyCategoryHeaderDelegate(
-              // We calculate the height of the grid:
-              // (2 rows * ~84 height) + (16 spacing) + (16 top padding) + (16 bottom padding)
-              height: 216.0,
-              child: Container(
-                color: AppColors.background,
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: _buildCategoryGrid(),
+              // --- 3. STICKY CATEGORY GRID ---
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: _StickyCategoryHeaderDelegate(
+                  height: 216.0,
+                  child: Container(
+                    color: AppColors.background,
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: _buildCategoryGrid(),
+                  ),
+                ),
               ),
-            ),
-          ),
 
-          // --- 4. DISCOUNT GUARANTEED ---
-          SliverToBoxAdapter(child: const SizedBox(height: 24)),
-          SliverToBoxAdapter(
-              child: _buildSectionHeader("Discount Guaranteed! 🔥", () {})),
-          const SliverToBoxAdapter(child: SizedBox(height: 16)),
-          SliverToBoxAdapter(child: _buildDiscountList()),
-          const SliverToBoxAdapter(child: SizedBox(height: 24)),
+              // --- 4. DISCOUNT GUARANTEED ---
+              SliverToBoxAdapter(child: const SizedBox(height: 24)),
+              SliverToBoxAdapter(
+                  child: _buildSectionHeader("Discount Guaranteed! 🔥", () {})),
+              const SliverToBoxAdapter(child: SizedBox(height: 16)),
+              SliverToBoxAdapter(child: _buildDiscountList(localContext)), // Use localContext
+              const SliverToBoxAdapter(child: SizedBox(height: 24)),
 
-          // --- 5. RECOMMENDED FOR YOU ---
-          SliverToBoxAdapter(
-              child: _buildSectionHeader("Recommended For You 😍", () {})),
-          const SliverToBoxAdapter(child: SizedBox(height: 16)),
-          SliverToBoxAdapter(child: _buildFilterChips()),
-          const SliverToBoxAdapter(child: SizedBox(height: 20)),
-          _buildRecommendedList(), // This now returns a SliverList
-          SliverToBoxAdapter(
-              child:
-              const SizedBox(height: 20)), // Added padding at the bottom
-        ],
+              // --- 5. RECOMMENDED FOR YOU ---
+              SliverToBoxAdapter(
+                  child: _buildSectionHeader("Recommended For You 😍", () {})),
+              const SliverToBoxAdapter(child: SizedBox(height: 16)),
+              SliverToBoxAdapter(child: _buildFilterChips()),
+              const SliverToBoxAdapter(child: SizedBox(height: 20)),
+              _buildRecommendedList(localContext), // Use localContext
+              SliverToBoxAdapter(
+                  child:
+                  const SizedBox(height: 20)), // Added padding at the bottom
+            ],
+          );
+        },
       ),
     );
   }
 
-  // --- 1. APP BAR (UPDATED) ---
+  // --- 1. APP BAR ---
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       elevation: 0,
@@ -120,8 +176,6 @@ class _HomeViewState extends State<HomeView> {
       leadingWidth: 70,
       leading: Padding(
         padding: const EdgeInsets.only(left: 20.0),
-        // --- IMAGE FIX ---
-        // Switched to CircleAvatar for better error handling
         child: CircleAvatar(
           radius: 25,
           backgroundColor: AppColors.cardBackground,
@@ -160,13 +214,11 @@ class _HomeViewState extends State<HomeView> {
         _buildAppBarIcon(Icons.notifications_outlined, () {
           // TODO: Add notification logic
         }),
-        // --- NAVIGATION CHANGE HERE ---
         _buildAppBarIcon(Icons.shopping_bag_outlined, () {
           Navigator.of(context).push(
             MaterialPageRoute(builder: (_) => const CartView()),
           );
         }),
-        // --- END NAVIGATION CHANGE ---
         const SizedBox(width: 16),
       ],
     );
@@ -199,12 +251,10 @@ class _HomeViewState extends State<HomeView> {
   }
 
   // --- 2. SEARCH BAR ---
-  // --- THIS METHOD IS UPDATED ---
   Widget _buildSearchBar() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
       child: TextField(
-        // --- CHANGES HERE ---
         readOnly: true,
         onTap: () {
           // Navigate to the new search screen
@@ -212,7 +262,6 @@ class _HomeViewState extends State<HomeView> {
             MaterialPageRoute(builder: (_) => const SearchView()),
           );
         },
-        // --- END CHANGES ---
         decoration: InputDecoration(
           hintText: "What are you craving?",
           prefixIcon: const Icon(Icons.search, color: AppColors.textFaded),
@@ -242,7 +291,21 @@ class _HomeViewState extends State<HomeView> {
                 ?.copyWith(fontWeight: FontWeight.bold),
           ),
           TextButton(
-            onPressed: onSeeAll,
+            onPressed: () {
+              // --- NAVIGATION LOGIC ADDED HERE ---
+              if (title == "Special Offers") {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const SpecialOffersView()),
+                );
+              } else if (title == "Recommended For You 😍") {
+                // Navigate to the new RecommendationView
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const RecommendationView()),
+                );
+              } else {
+                onSeeAll(); // Use the passed function for other sections
+              }
+            },
             child: const Text(
               "See All",
               style: TextStyle(
@@ -345,52 +408,116 @@ class _HomeViewState extends State<HomeView> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       itemBuilder: (context, index) {
         final category = categories[index];
-        // --- OVERFLOW FIX ---
-        // This Column was overflowing.
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppColors.cardBackground,
-                borderRadius: BorderRadius.circular(15),
+
+        // --- Added Logic for 'More' Navigation ---
+        void onTapHandler() {
+          if (category["name"] == "More") {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const MoreCategoryView()),
+            );
+          } else {
+            // Placeholder: Navigate to RecommendationView filtered by category
+            // Example for future use:
+            // Navigator.of(context).push(
+            //   MaterialPageRoute(builder: (_) => RecommendationView(filter: category["name"])),
+            // );
+          }
+        }
+
+        // --- InkWell for tap detection ---
+        return InkWell(
+          onTap: onTapHandler, // Call the navigation logic
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              // Container for the icon/emoji
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.cardBackground,
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child:
+                Text(category["emoji"]!, style: const TextStyle(fontSize: 30)),
               ),
-              child:
-              Text(category["emoji"]!, style: const TextStyle(fontSize: 30)),
-            ),
-            const SizedBox(height: 4), // Reduced spacing
-            Text(
-              category["name"]!,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall
-                  ?.copyWith(fontSize: 11), // Made text smaller
-              maxLines: 1, // Prevent wrapping
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+              const SizedBox(height: 4), // Reduced spacing
+              // Label
+              Text(
+                category["name"]!,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(fontSize: 11), // Made text smaller
+                maxLines: 1, // Prevent wrapping
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
         );
       },
     );
   }
 
-  // --- 6. DISCOUNT LIST (Horizontal) ---
-  Widget _buildDiscountList() {
+  // --- NEW: Quantity Control Button Helper ---
+  Widget _buildQuantityButton(IconData icon, VoidCallback onTap, Color color) {
+    return Container(
+      width: 30,
+      height: 30,
+      decoration: BoxDecoration(
+        color: AppColors.cardBackground,
+        shape: BoxShape.circle,
+        border: Border.all(color: color, width: 1.5),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        customBorder: const CircleBorder(),
+        child: Icon(icon, color: color, size: 18),
+      ),
+    );
+  }
+
+  // --- 6. DISCOUNT LIST (Horizontal, UPDATED with Stepper) ---
+  Widget _buildDiscountList(BuildContext context) {
+    // Dummy Data for Discount Cards
+    final items = [
+      {"image": 'https://placehold.co/300x300/png?text=Food+Bowl', "title": "Salmon Poke Bowl", "subtitle": "Warung Bu Tini", "price": 12.50},
+      {"image": 'https://placehold.co/300x300/png?text=Food+Bowl', "title": "Chicken Noodle Soup", "subtitle": "Warung Bu Tini", "price": 10.00},
+      {"image": 'https://placehold.co/300x300/png?text=Food+Bowl', "title": "Vegetable Curry", "subtitle": "Warung Bu Tini", "price": 9.50},
+    ];
+
     return SizedBox(
       height: 220,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: 3, // Dummy count
+        itemCount: items.length,
         padding: const EdgeInsets.only(left: 20),
         itemBuilder: (context, index) {
-          return _buildDiscountCard();
+          return _buildDiscountCard(context, items[index]);
         },
       ),
     );
   }
 
-  Widget _buildDiscountCard() {
+  // --- 7. DISCOUNT CARD (UPDATED with Stepper) ---
+  Widget _buildDiscountCard(BuildContext context, Map<String, dynamic> item) {
+    String title = item["title"];
+    int currentQuantity = _itemQuantities.containsKey(title) ? _itemQuantities[title]! : 0;
+
+    // Logic for quantity changes
+    void updateQuantity(int delta) {
+      setState(() {
+        int newQuantity = currentQuantity + delta;
+        if (newQuantity <= 0) {
+          _itemQuantities.remove(title);
+        } else {
+          _itemQuantities[title] = newQuantity;
+        }
+      });
+
+      // Dynamic Bottom Sheet Logic
+      _showCartConfirmationSheet(context, title, currentQuantity + delta);
+    }
+
     return Container(
       width: 160,
       margin: const EdgeInsets.only(right: 16),
@@ -409,7 +536,7 @@ class _HomeViewState extends State<HomeView> {
                 ),
                 clipBehavior: Clip.antiAlias, // Clips the image
                 child: Image.network(
-                  'https://placehold.co/300x300/png?text=Food+Bowl',
+                  item["image"],
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
                     return Center(
@@ -438,12 +565,39 @@ class _HomeViewState extends State<HomeView> {
                   ),
                 ),
               ),
+              // ADD BUTTON (TOP RIGHT)
+              Positioned(
+                top: 8,
+                right: 8,
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: AppColors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: currentQuantity == 0
+                      ? _buildQuantityButton(Icons.add, () => updateQuantity(1), AppColors.primary)
+                      : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _buildQuantityButton(Icons.remove, () => updateQuantity(-1), AppColors.primary),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text(
+                          currentQuantity.toString(),
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      _buildQuantityButton(Icons.add, () => updateQuantity(1), AppColors.primary),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 8),
           // Placeholder for text
           Text(
-            "Salmon Poke Bowl",
+            title,
             style: Theme.of(context)
                 .textTheme
                 .bodyLarge
@@ -452,7 +606,7 @@ class _HomeViewState extends State<HomeView> {
             overflow: TextOverflow.ellipsis,
           ),
           Text(
-            "Warung Bu Tini",
+            item["subtitle"],
             style: Theme.of(context)
                 .textTheme
                 .bodySmall
@@ -465,7 +619,8 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  // --- 7. FILTER CHIPS ---
+
+  // --- 8. FILTER CHIPS (No change) ---
   Widget _buildFilterChips() {
     return SizedBox(
       height: 45,
@@ -508,9 +663,8 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  // --- 8. RECOMMENDED LIST (Vertical) ---
-  // --- REFACTORED to return a SliverList ---
-  Widget _buildRecommendedList() {
+  // --- 9. RECOMMENDED LIST (Vertical) ---
+  Widget _buildRecommendedList(BuildContext context) {
     // Dummy data for each card
     final items = [
       {
@@ -519,7 +673,7 @@ class _HomeViewState extends State<HomeView> {
         "dist": "800 m",
         "rating": "4.9",
         "reviews": "(2.3k)",
-        "price": "2.00"
+        "price": 2.00
       },
       {
         "image": "https://placehold.co/300x300/png?text=Pizza",
@@ -527,7 +681,7 @@ class _HomeViewState extends State<HomeView> {
         "dist": "1.2 km",
         "rating": "4.5",
         "reviews": "(1.9k)",
-        "price": "1.50"
+        "price": 1.50
       },
       {
         "image": "https://placehold.co/300x300/png?text=Burger",
@@ -535,7 +689,7 @@ class _HomeViewState extends State<HomeView> {
         "dist": "1.6 km",
         "rating": "4.6",
         "reviews": "(1.5k)",
-        "price": "2.50"
+        "price": 2.50
       },
       {
         "image": "https://placehold.co/300x300/png?text=Salad",
@@ -543,16 +697,18 @@ class _HomeViewState extends State<HomeView> {
         "dist": "2.1 km",
         "rating": "4.8",
         "reviews": "(1.1k)",
-        "price": "3.00"
+        "price": 3.00
       },
     ];
 
     return SliverList(
       delegate: SliverChildBuilderDelegate(
             (context, index) {
+          // This ensures that the context passed down to the card is the Builder's context
+          // which is essential for the Scaffold.of(context) call inside _showCartConfirmationSheet
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: _buildRestaurantCard(items[index]),
+            child: _buildRestaurantCard(context, items[index]),
           );
         },
         childCount: items.length,
@@ -560,29 +716,61 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  Widget _buildRestaurantCard(Map<String, String> item) {
+  // --- 10. RECOMMENDED CARD (UPDATED with Stepper) ---
+  Widget _buildRestaurantCard(BuildContext context, Map<String, dynamic> item) {
+    String title = item["title"] as String;
+    // Ensure the item exists in the map, default to 0
+    int currentQuantity = _itemQuantities.containsKey(title) ? _itemQuantities[title]! : 0;
+
+    // --- Logic for quantity changes ---
+    void updateQuantity(int delta) {
+      setState(() {
+        int newQuantity = currentQuantity + delta;
+        if (newQuantity <= 0) {
+          _itemQuantities.remove(title);
+        } else {
+          _itemQuantities[title] = newQuantity;
+        }
+      });
+
+      // Dynamic Bottom Sheet Logic
+      _showCartConfirmationSheet(context, title, currentQuantity + delta);
+    }
+
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       child: Row(
         children: [
-          // Image
-          // --- IMAGE FIX ---
-          Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: AppColors.cardBackground, // Fallback color
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: Image.network(
-              item["image"]!,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return const Center(
-                  child: Icon(Icons.fastfood, color: AppColors.textFaded),
-                );
-              },
+          // Image (Tappable for Details View)
+          InkWell(
+            onTap: () {
+              // Navigate to Item Details when card is tapped
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => ItemDetailsView(
+                    itemName: item["title"]!,
+                    itemImage: item["image"]!,
+                  ),
+                ),
+              );
+            },
+            child: Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: AppColors.cardBackground, // Fallback color
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: Image.network(
+                item["image"]!,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return const Center(
+                    child: Icon(Icons.fastfood, color: AppColors.textFaded),
+                  );
+                },
+              ),
             ),
           ),
           const SizedBox(width: 16),
@@ -592,7 +780,7 @@ class _HomeViewState extends State<HomeView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  item["title"]!,
+                  title,
                   style: Theme.of(context)
                       .textTheme
                       .titleMedium
@@ -628,7 +816,7 @@ class _HomeViewState extends State<HomeView> {
                         color: AppColors.primary, size: 16),
                     const SizedBox(width: 8),
                     Text(
-                      "\$${item["price"]}",
+                      "\$${(item["price"] as double).toStringAsFixed(2)}",
                       style: Theme.of(context)
                           .textTheme
                           .bodySmall
@@ -639,14 +827,26 @@ class _HomeViewState extends State<HomeView> {
               ],
             ),
           ),
-          // Like button
-          IconButton(
-            icon: const Icon(Icons.favorite_border,
-                color: AppColors.border, size: 28),
-            onPressed: () {
-              // TODO: Handle like
-            },
-          ),
+          // Stepper/Like button
+          if (currentQuantity == 0)
+          // Show + icon to add the first item
+            _buildQuantityButton(Icons.add, () => updateQuantity(1), AppColors.primary)
+          else
+          // Show Stepper (+ / quantity / -)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildQuantityButton(Icons.remove, () => updateQuantity(-1), AppColors.primary),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    currentQuantity.toString(),
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                _buildQuantityButton(Icons.add, () => updateQuantity(1), AppColors.primary),
+              ],
+            ),
         ],
       ),
     );
