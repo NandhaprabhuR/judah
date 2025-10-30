@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:judah/screens/widgets/app_theme.dart';
 import 'package:judah/screens/widgets/bottom_navbar_view.dart';
 import 'package:judah/screens/order_state_view.dart'; // Import OrderState
-// Assuming the 'lottie' package is installed and imported:
-import 'package:lottie/lottie.dart';
+import 'package:lottie/lottie.dart'; // Lottie package used
 
 class OrderPlacedView extends StatefulWidget {
   final double orderTotal;
@@ -19,15 +18,13 @@ class _OrderPlacedViewState extends State<OrderPlacedView> {
   void initState() {
     super.initState();
 
-    // 1. Update the Order State (Simulate placing the order globally)
-    // This ensures the active order appears in the OrdersView tab.
+    // 1. Update the Order State
     OrderState.placeNewOrder(widget.orderTotal);
 
-    // 2. Set Timer for navigation after success animation (4 seconds total)
+    // 2. Set Timer for auto-navigation after 4 seconds
     Timer(const Duration(seconds: 4), () {
       if (mounted) {
         // Navigate to the main BottomNavBar (Home), clearing the checkout history.
-        // This is the action taken after the user clicks "Apply" on the payment screen.
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const BottomNavbarView()),
               (Route<dynamic> route) => false,
@@ -43,29 +40,20 @@ class _OrderPlacedViewState extends State<OrderPlacedView> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // --- LOTTIE ANIMATION WIDGET ---
-            SizedBox(
+            // --- LOTTIE ANIMATION WIDGET (Minimal Error Fallback) ---
+            Lottie.asset(
+              'assets/animations/Done.json',
               width: 250,
               height: 250,
-              // Correctly use Lottie.asset as the child of the SizedBox.
-              child: Lottie.asset(
-                'assets/lottie/Done.json',
-                repeat: false, // Ensure it plays only once
-                onLoaded: (composition) {
-                  // If you want the timer to start only after the animation loads,
-                  // you would move the Timer logic here and adjust the duration.
-                },
-                errorBuilder: (context, error, stackTrace) {
-                  // Fallback widget if the Lottie file cannot be found/loaded
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryLight,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.check_circle_outline, size: 150, color: AppColors.primary),
-                  );
-                },
-              ),
+              repeat: false,
+              errorBuilder: (context, error, stackTrace) {
+                // FALLBACK: Returns an empty box if the asset cannot be loaded.
+                // This forces you to see a gap if the Lottie path is incorrect.
+                return const SizedBox(
+                  width: 250,
+                  height: 250,
+                );
+              },
             ),
             // ------------------------------------
             const SizedBox(height: 30),
@@ -86,7 +74,7 @@ class _OrderPlacedViewState extends State<OrderPlacedView> {
             ),
             const SizedBox(height: 16),
             Text(
-              "You will be redirected to the Home page and can track your order in a few seconds.",
+              "Thankyou",
               style: Theme.of(context).textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
