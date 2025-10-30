@@ -4,6 +4,7 @@ import 'package:judah/screens/widgets/buttons_theme.dart';
 import 'dart:math';
 
 import 'item_deatils_view.dart';
+import 'checkout_orders_view.dart'; // NEW IMPORT for Checkout navigation
 
 
 // This is a placeholder for the Cart view (based on the provided screenshot)
@@ -127,12 +128,15 @@ class _CartViewState extends State<CartView> {
             ),
           ),
 
-          // --- Checkout Button Placeholder (Optional but good practice) ---
+          // --- Checkout Button (UPDATED NAVIGATION) ---
           Padding(
             padding: const EdgeInsets.all(24.0),
             child: PrimaryButton(
               onPressed: () {
-                // TODO: Navigate to Checkout
+                // Navigate to the Checkout Orders screen
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const CheckoutOrdersView()),
+                );
               },
               text: "Checkout (5 items - \$104.00)",
             ),
