@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:judah/screens/users/auth/splash_view.dart';
 // Note: Make sure your import paths match your project name
-import 'package:judah/screens/splash_view.dart';
 import 'package:judah/screens/widgets/app_theme.dart';
 
 // This is Screen 2: "Welcome to Foodu!"

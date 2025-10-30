@@ -2,22 +2,22 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import 'package:judah/screens/signup_view.dart';
 import 'package:judah/screens/widgets/app_theme.dart';
 import 'package:judah/screens/widgets/buttons_theme.dart';
 
-import '../auth_gate_view.dart';
+import 'auth_gate_view.dart';
+import 'login_view.dart';
 import 'otp_view.dart';
 
-// This is Screen 6: "Login to Your Account" (Phone Login)
-class LoginView extends StatefulWidget {
-  const LoginView({super.key});
+// This is Screen 5 (Right): "Create New Account"
+class SignupView extends StatefulWidget {
+  const SignupView({super.key});
 
   @override
-  State<LoginView> createState() => _LoginViewState();
+  State<SignupView> createState() => _SignupViewState();
 }
 
-class _LoginViewState extends State<LoginView> {
+class _SignupViewState extends State<SignupView> {
   bool _rememberMe = false;
 
   @override
@@ -47,7 +47,7 @@ class _LoginViewState extends State<LoginView> {
             ),
             const SizedBox(height: 30),
             Text(
-              "Login to Your Account",
+              "Create New Account",
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 30),
@@ -59,9 +59,28 @@ class _LoginViewState extends State<LoginView> {
                 hintText: "+1 000 000 000",
                 prefixIcon: Padding(
                   padding: EdgeInsets.fromLTRB(16, 0, 10, 0),
-                  // This is a placeholder for a country code picker
                   child: Text("🇺🇸", style: TextStyle(fontSize: 24)),
                 ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Email Field
+            TextFormField(
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(
+                hintText: "Email",
+                prefixIcon: Icon(Icons.email_outlined, color: AppColors.textFaded),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Full Name Field
+            TextFormField(
+              keyboardType: TextInputType.name,
+              decoration: const InputDecoration(
+                hintText: "Full Name",
+                prefixIcon: Icon(Icons.person_outline, color: AppColors.textFaded),
               ),
             ),
             const SizedBox(height: 20),
@@ -86,15 +105,15 @@ class _LoginViewState extends State<LoginView> {
             ),
             const SizedBox(height: 30),
 
-            // Sign in Button
+            // Sign up Button
             PrimaryButton(
-              text: "Sign in",
+              text: "Sign up",
               onPressed: () {
                 // Navigate to OTP screen
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (_) => const OtpView(
-                      phoneNumber: "+1 111 ******99", // Pass dummy number
+                      phoneNumber: "+1 000 ******00", // Pass dummy number
                     ),
                   ),
                 );
@@ -117,14 +136,14 @@ class _LoginViewState extends State<LoginView> {
             ),
             const SizedBox(height: 60),
 
-            // Sign up text
+            // Sign in text
             Text.rich(
               TextSpan(
-                text: "Don't have an account? ",
+                text: "Already have an account? ",
                 style: Theme.of(context).textTheme.bodyMedium,
                 children: [
                   TextSpan(
-                    text: "Sign up",
+                    text: "Sign in",
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.primary,
                       fontWeight: FontWeight.bold,
@@ -132,7 +151,7 @@ class _LoginViewState extends State<LoginView> {
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
                         Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (_) => const SignupView()),
+                          MaterialPageRoute(builder: (_) => const LoginView()),
                         );
                       },
                   ),

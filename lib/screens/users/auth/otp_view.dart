@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 // Make sure these imports match your project structure
-import 'package:judah/screens/setup_profile_view.dart';
 import 'package:judah/screens/widgets/app_theme.dart';
 import 'package:judah/screens/widgets/buttons_theme.dart';
 import 'package:pinput/pinput.dart';
+
+import '../setup profile/setup_profile_view.dart';
 
 // This is Screen 7: "OTP Code Verification"
 class OtpView extends StatefulWidget {

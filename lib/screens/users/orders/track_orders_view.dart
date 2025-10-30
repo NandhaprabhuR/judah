@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:judah/screens/widgets/app_theme.dart';
-import 'package:judah/screens/widgets/bottom_navbar_view.dart';
 import 'package:judah/screens/widgets/buttons_theme.dart';
 
+import '../bottom navbar/bottom_navbar_view.dart';
 import 'cancel_order_view.dart'; // NEW IMPORT for the Cancel screen
 
 // This is the new dedicated Driver/Order Tracking screen

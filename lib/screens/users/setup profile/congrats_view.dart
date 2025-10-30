@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 // Make sure these imports match your project structure
-import 'package:judah/screens/widgets/bottom_navbar_view.dart';
 import 'package:judah/screens/widgets/app_theme.dart';
+
+import '../bottom navbar/bottom_navbar_view.dart';
 
 class CongratsView extends StatefulWidget {
   const CongratsView({super.key});

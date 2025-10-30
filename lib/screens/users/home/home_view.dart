@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:judah/screens/searchbar_view.dart';
+import 'package:judah/screens/users/home/searchbar_view.dart';
 import 'package:judah/screens/widgets/app_theme.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import 'cart_view.dart';
+import '../cart/cart_view.dart';
 import 'item_deatils_view.dart';
 import 'special_offers_view.dart';
 import 'recommendation_view.dart';
@@ -211,9 +211,7 @@ class _HomeViewState extends State<HomeView> {
         ],
       ),
       actions: [
-        _buildAppBarIcon(Icons.notifications_outlined, () {
-          // TODO: Add notification logic
-        }),
+
         _buildAppBarIcon(Icons.shopping_bag_outlined, () {
           Navigator.of(context).push(
             MaterialPageRoute(builder: (_) => const CartView()),

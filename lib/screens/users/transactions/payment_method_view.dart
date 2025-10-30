@@ -4,7 +4,7 @@ import 'package:judah/screens/widgets/buttons_theme.dart';
 // REMOVED IMPORT: import 'driver_heading_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import 'orders_placedview.dart';
+import '../orders/orders_placedview.dart';
 
 // This is Screen 47: Payment Methods
 class PaymentMethodsView extends StatefulWidget {

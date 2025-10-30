@@ -4,7 +4,7 @@ import 'package:judah/screens/widgets/buttons_theme.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'promo_view.dart';
-import 'review_view.dart';
+import '../cart/review_view.dart';
 
 // Screen for individual dish details (Based on Screenshot 2.03.54 PM)
 class ItemDetailsView extends StatefulWidget {

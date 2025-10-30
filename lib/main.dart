@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:judah/screens/users/auth/launch_view.dart';
 
-import 'package:judah/screens/launch_view.dart';
 import 'package:judah/screens/widgets/app_theme.dart';
 
 void main() {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:judah/screens/widgets/app_theme.dart';
 import 'package:judah/screens/widgets/buttons_theme.dart';
 
-import 'item_deatils_view.dart';
+import '../home/item_deatils_view.dart';
 import 'order_state_view.dart';
 import 'orders_placedview.dart'; // Note: Assuming this is the OrderPlacedView file
 

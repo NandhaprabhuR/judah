@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:judah/screens/users/setup%20profile/setup_location_view.dart';
 // Make sure these imports match your project structure
-import 'package:judah/screens/setup_location_view.dart';
 import 'package:judah/screens/widgets/app_theme.dart';
 import 'package:judah/screens/widgets/buttons_theme.dart';
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:judah/screens/payment_method_view.dart';
 import 'package:judah/screens/widgets/app_theme.dart';
 import 'package:judah/screens/widgets/buttons_theme.dart';
 
+import '../transactions/payment_method_view.dart';
 import 'orders_placedview.dart'; // NEW IMPORT for direct order flow
 
 // This is Screen 45: Checkout Orders

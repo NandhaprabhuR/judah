@@ -3,8 +3,8 @@ import 'package:judah/screens/widgets/app_theme.dart';
 import 'package:judah/screens/widgets/buttons_theme.dart';
 import 'dart:math';
 
-import 'item_deatils_view.dart';
-import 'checkout_orders_view.dart'; // NEW IMPORT for Checkout navigation
+import '../home/item_deatils_view.dart';
+import '../orders/checkout_orders_view.dart'; // NEW IMPORT for Checkout navigation
 
 
 // This is a placeholder for the Cart view (based on the provided screenshot)

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:judah/screens/users/home/recommendation_view.dart';
 import 'package:judah/screens/widgets/app_theme.dart';
-import 'package:judah/screens/recommendation_view.dart'; // Import the destination view
 
 // This screen displays all food categories in a grid (Screen 28)
 class MoreCategoryView extends StatelessWidget {

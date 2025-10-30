@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:judah/screens/users/auth/welcome_view.dart';
 // Note: Make sure your import path matches your project name
 // If your project folder is 'judah', this is correct:
-import 'package:judah/screens/welcome_view.dart';
 import 'package:judah/screens/widgets/app_theme.dart';
 // If your project folder is 'foodu_app_ui', it would be:
 // import 'package:foodu_app_ui/screens/welcome_view.dart';

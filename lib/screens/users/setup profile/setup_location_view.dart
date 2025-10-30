@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 // Make sure these imports match your project structure
-import 'package:judah/screens/congrats_view.dart';
 import 'package:judah/screens/widgets/app_theme.dart';
 import 'package:judah/screens/widgets/buttons_theme.dart';
+
+import 'congrats_view.dart';
 
 class SetLocationView extends StatelessWidget {
   const SetLocationView({super.key});

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:judah/screens/widgets/app_theme.dart';
 import 'package:judah/screens/widgets/buttons_theme.dart';
 
-import '../auth_gate_view.dart';
+import 'auth_gate_view.dart';
 
 // This is Screens 3 & 4: The Onboarding Carousel
 class SplashView extends StatefulWidget {

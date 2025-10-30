@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 // Make sure these imports match your project structure
-import 'package:judah/screens/home_view.dart';
-import 'package:judah/screens/orders_view.dart'; // NEW: Ensure OrdersView is imported
+// NEW: Ensure OrdersView is imported
 import 'package:judah/screens/widgets/app_theme.dart';
+
+import '../home/home_view.dart';
+import '../orders/orders_view.dart';
+import '../profile/profile_view.dart';
+import '../wallet/e-wallet_view.dart';
 
 class BottomNavbarView extends StatefulWidget {
   const BottomNavbarView({super.key});
@@ -19,10 +23,8 @@ class _BottomNavbarViewState extends State<BottomNavbarView> {
   final List<Widget> _widgetOptions = <Widget>[
     const HomeView(), // Screen for "Home"
     const OrdersView(), // <<< CHANGE: Use the real OrdersView for dynamic rebuilds
-    const PlaceholderScreen(title: "Message"), // Placeholder
-    const PlaceholderScreen(title: "E-Wallet"), // Placeholder
-    const PlaceholderScreen(title: "Profile"), // Placeholder
-  ];
+    const EWalletView(),
+    const ProfileView(),  ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -49,11 +51,7 @@ class _BottomNavbarViewState extends State<BottomNavbarView> {
             activeIcon: Icon(Icons.receipt_long),
             label: 'Orders',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat_bubble_outline),
-            activeIcon: Icon(Icons.chat_bubble),
-            label: 'Message',
-          ),
+
           BottomNavigationBarItem(
             icon: Icon(Icons.account_balance_wallet_outlined),
             activeIcon: Icon(Icons.account_balance_wallet),

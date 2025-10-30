@@ -1,11 +1,12 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:judah/screens/users/auth/signup_view.dart';
 
-import 'package:judah/screens/login_view.dart';
-import 'package:judah/screens/signup_view.dart';
 import 'package:judah/screens/widgets/app_theme.dart';
 import 'package:judah/screens/widgets/buttons_theme.dart';
+
+import 'login_view.dart';
 
 // This is Screen 5 (Left): "Let's you in"
 class AuthGateView extends StatelessWidget {

@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:judah/screens/widgets/app_theme.dart';
-import 'package:judah/screens/widgets/bottom_navbar_view.dart';
-import 'package:judah/screens/order_state_view.dart'; // Import OrderState
-import 'package:lottie/lottie.dart'; // Lottie package used
+import 'package:lottie/lottie.dart';
+
+import '../bottom navbar/bottom_navbar_view.dart';
+import 'order_state_view.dart'; // Lottie package used
 
 class OrderPlacedView extends StatefulWidget {
   final double orderTotal;
